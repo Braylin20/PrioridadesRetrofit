@@ -23,5 +23,8 @@ class PrioridadRepository @Inject constructor(
         return Resource.Success(response)
     }
 
+    suspend fun addPrioridad(prioridadDto: PrioridadDto) {
+        api.addPrioridad(prioridadDto)
+    }
 
 }

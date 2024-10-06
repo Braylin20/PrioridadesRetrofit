@@ -47,6 +47,15 @@ class PrioridadViewModel @Inject constructor(
         }
     }
 
+    fun addPrioridad(){
+        viewModelScope.launch {
+            try{
+                prioridadRepository.addPrioridad(uiState.value.toEntity())
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+    }
     data class UiState(
         val prioridadId: Int?= null,
         val descripcion: String? = null,
