@@ -36,7 +36,6 @@ fun PrioridadListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     PrioridadListBody(
         uiState = uiState,
-        prioridades = uiState.prioridades,
         onAddArticulo = createPrioridad,
         onVerPrioridad = goToPrioridadScreen
     )
@@ -46,7 +45,6 @@ fun PrioridadListScreen(
 @Composable
 fun PrioridadListBody(
     uiState: PrioridadViewModel.UiState,
-    prioridades: List<PrioridadDto>,
     onAddArticulo: () -> Unit,
     onVerPrioridad: (Int) -> Unit,
 ) {
@@ -85,17 +83,13 @@ fun PrioridadListBody(
                         .align(Alignment.CenterHorizontally)
                 )
             }
-
-
             Text(text = uiState.message?:"", color = Color.Red)
-
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
 
-                items(prioridades) { prioridad ->
+                items(uiState.prioridades) { prioridad ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
