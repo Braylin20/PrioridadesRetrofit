@@ -23,8 +23,13 @@ class PrioridadRepository @Inject constructor(
         return Resource.Success(response)
     }
 
-    suspend fun addPrioridad(prioridadDto: PrioridadDto) {
-        api.addPrioridad(prioridadDto)
+    suspend fun addPrioridad(prioridadDto: PrioridadDto) : Resource<PrioridadDto>{
+        val response = try{
+            api.addPrioridad(prioridadDto)
+        }catch (e:Exception){
+            return Resource.Error("No se ha guardado correctamente")
+        }
+        return Resource.Success(response)
     }
 
 }

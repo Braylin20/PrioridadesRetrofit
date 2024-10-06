@@ -17,47 +17,92 @@ import javax.inject.Inject
 @HiltViewModel
 class PrioridadViewModel @Inject constructor(
     private val prioridadRepository: PrioridadRepository
-):ViewModel(){
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            getPrioridades()
-        }
+        getPrioridades()
+
     }
 
-    private fun getPrioridades(){
+    private fun getPrioridades() {
         viewModelScope.launch {
             val result = prioridadRepository.getPrioridadesList()
-            when(result){
+            when (result) {
                 is Resource.Success -> _uiState.update {
                     it.copy(
                         isLoading = false,
-                        prioridades = result.data?: emptyList()
+                        prioridades = result.data ?: emptyList()
                     )
                 }
+
                 is Resource.Error -> _uiState.update {
                     it.copy(message = "No hay prioridades")
                 }
+
                 is Resource.Loading -> TODO()
 
             }
         }
     }
 
-    fun addPrioridad(){
+    fun addPrioridad() {
         viewModelScope.launch {
-            try{
-                prioridadRepository.addPrioridad(uiState.value.toEntity())
-            }catch (e: Exception){
-                e.printStackTrace()
+            val result = prioridadRepository.addPrioridad(_uiState.value.toEntity())
+            when (result) {
+                is Resource.Success ->  {
+                    _uiState.update{
+                        it.copy(
+                            message = "Agregado correctamente",
+                        )
+                    }
+                }
+
+                is Resource.Error -> _uiState.update {
+                    it.copy(
+                        message = "No se ha podido agregar"
+                    )
+                }
+
+                is Resource.Loading -> TODO()
             }
         }
     }
+
+    fun onDescripcionChange(descripcion: String) {
+        _uiState.update {
+            it.copy(
+                descripcion = descripcion,
+                descripcionError = null
+            )
+        }
+    }
+
+    fun onDiasCompromisoChange(diasCompromiso: Int) {
+        _uiState.update {
+            it.copy(
+                diasCompromiso = diasCompromiso,
+                diasCompromisoError = null
+            )
+        }
+    }
+
+    fun nuevo() {
+        _uiState.update {
+            it.copy(
+                descripcion = null,
+                diasCompromiso = null,
+                diasCompromisoError = null,
+                descripcionError = null,
+                message = null
+            )
+        }
+    }
+
     data class UiState(
-        val prioridadId: Int?= null,
+        val prioridadId: Int? = null,
         val descripcion: String? = null,
         val diasCompromiso: Int? = null,
         val prioridades: List<PrioridadDto> = emptyList(),
@@ -67,9 +112,9 @@ class PrioridadViewModel @Inject constructor(
         val diasCompromisoError: String? = null
     )
 
-    fun UiState.toEntity() = PrioridadDto(
-        prioridadId = prioridadId?: 0,
-        descripcion = descripcion?:"",
-        diasCompromiso = diasCompromiso?: 0
+    private fun UiState.toEntity() = PrioridadDto(
+        prioridadId = prioridadId ?: 0,
+        descripcion = descripcion ?: "",
+        diasCompromiso = diasCompromiso ?: 0
     )
 }
