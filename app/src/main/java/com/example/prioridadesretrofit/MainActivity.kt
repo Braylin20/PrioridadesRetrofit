@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.prioridadesretrofit.presentation.navigation.PrioridadNavHost
 import com.example.prioridadesretrofit.ui.theme.PrioridadesRetrofitTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,12 +23,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PrioridadesRetrofitTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                val navHost = rememberNavController()
+                PrioridadNavHost(navHost)
             }
         }
     }
