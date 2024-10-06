@@ -50,23 +50,43 @@ class PrioridadViewModel @Inject constructor(
 
     fun addPrioridad() {
         viewModelScope.launch {
-            val result = prioridadRepository.addPrioridad(_uiState.value.toEntity())
-            when (result) {
-                is Resource.Success ->  {
-                    _uiState.update{
-                        it.copy(
-                            message = "Agregado correctamente",
-                        )
-                    }
-                }
-
-                is Resource.Error -> _uiState.update {
+            if(descriptionExistOrEmpty(uiState.value.descripcion?:"")) return@launch
+            if(uiState.value.diasCompromiso == null){
+                _uiState.update {
                     it.copy(
-                        message = "No se ha podido agregar"
+                        diasCompromisoError = "Este campo es obligatorio"
                     )
                 }
+                return@launch
+            }
+            if(uiState.value.diasCompromiso!! < 0){
+                _uiState.update {
+                    it.copy(
+                        diasCompromisoError = "Este campo debe ser mayor a 0"
+                    )
+                }
+                return@launch
+            }
+            else{
+                val result = prioridadRepository.addPrioridad(_uiState.value.toEntity())
+                when (result) {
+                    is Resource.Success ->  {
+                        _uiState.update{
+                            it.copy(
+                                message = "Agregado correctamente",
+                            )
+                        }
+                        nuevo()
+                    }
 
-                is Resource.Loading -> TODO()
+                    is Resource.Error -> _uiState.update {
+                        it.copy(
+                            message = "No se ha podido agregar"
+                        )
+                    }
+
+                    is Resource.Loading -> TODO()
+                }
             }
         }
     }
@@ -89,7 +109,29 @@ class PrioridadViewModel @Inject constructor(
         }
     }
 
-    fun nuevo() {
+    private suspend fun descriptionExistOrEmpty(descripcion: String): Boolean{
+        if(descripcion.isBlank()){
+            _uiState.update {
+                it.copy(descripcionError = "La descripción no puede estar vacía")
+            }
+            return true
+        }
+        val prioridades = prioridadRepository.getPrioridadesList()
+        val exist: Boolean
+        if (prioridades is Resource.Success) {
+            exist = prioridades.data?.any { it.descripcion == descripcion } != null
+
+            if(exist){
+                _uiState.update {
+                    it.copy(descripcionError = "Esta descrpcion ya existe")
+                }
+                return true
+            }
+
+        }
+        return false
+    }
+    private fun nuevo() {
         _uiState.update {
             it.copy(
                 descripcion = null,
