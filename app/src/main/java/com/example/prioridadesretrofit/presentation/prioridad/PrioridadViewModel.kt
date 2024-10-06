@@ -50,8 +50,10 @@ class PrioridadViewModel @Inject constructor(
 
     fun addPrioridad() {
         viewModelScope.launch {
-            if(descriptionExistOrEmpty(uiState.value.descripcion?:"")) return@launch
-            if(uiState.value.diasCompromiso == null){
+            if (descriptionExistOrEmpty(uiState.value.descripcion ?: "")) {
+                return@launch
+            }
+            if (uiState.value.diasCompromiso == null) {
                 _uiState.update {
                     it.copy(
                         diasCompromisoError = "Este campo es obligatorio"
@@ -59,19 +61,18 @@ class PrioridadViewModel @Inject constructor(
                 }
                 return@launch
             }
-            if(uiState.value.diasCompromiso!! < 0){
+            if (uiState.value.diasCompromiso!! < 0) {
                 _uiState.update {
                     it.copy(
                         diasCompromisoError = "Este campo debe ser mayor a 0"
                     )
                 }
                 return@launch
-            }
-            else{
+            } else {
                 val result = prioridadRepository.addPrioridad(_uiState.value.toEntity())
                 when (result) {
-                    is Resource.Success ->  {
-                        _uiState.update{
+                    is Resource.Success -> {
+                        _uiState.update {
                             it.copy(
                                 message = "Agregado correctamente",
                             )
@@ -109,28 +110,27 @@ class PrioridadViewModel @Inject constructor(
         }
     }
 
-    private suspend fun descriptionExistOrEmpty(descripcion: String): Boolean{
-        if(descripcion.isBlank()){
+    private suspend fun descriptionExistOrEmpty(descripcion: String): Boolean {
+        if (descripcion.isBlank()) {
             _uiState.update {
                 it.copy(descripcionError = "La descripción no puede estar vacía")
             }
             return true
         }
         val prioridades = prioridadRepository.getPrioridadesList()
-        val exist: Boolean
-        if (prioridades is Resource.Success) {
-            exist = prioridades.data?.any { it.descripcion == descripcion } != null
 
-            if(exist){
-                _uiState.update {
-                    it.copy(descripcionError = "Esta descrpcion ya existe")
-                }
-                return true
+        val exist: Boolean = prioridades.data?.any { it.descripcion == descripcion } != null
+
+        if (!exist) {
+            _uiState.update {
+                it.copy(descripcionError = "Esta descrpcion ya existe")
             }
-
+            return true
         }
+
         return false
     }
+
     private fun nuevo() {
         _uiState.update {
             it.copy(
