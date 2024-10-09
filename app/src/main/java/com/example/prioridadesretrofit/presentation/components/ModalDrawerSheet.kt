@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -79,6 +81,60 @@ fun ModalDrawerSheet(
                     drawerState.close()
                 }
                 navHostController.navigate(Screen.PrioridadList) {
+                    popUpTo(0)
+                }
+            },
+        )
+        NavigationDrawerItem(
+            label = { Text(text = "Tickets") },
+            selected = false,
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Call,
+                    contentDescription = null
+                )
+            },
+            onClick = {
+                coroutineScope.launch {
+                    drawerState.close()
+                }
+                navHostController.navigate(Screen.TicketList) {
+                    popUpTo(0)
+                }
+            },
+        )
+        NavigationDrawerItem(
+            label = { Text(text = "Sistemas") },
+            selected = false,
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null
+                )
+            },
+            onClick = {
+                coroutineScope.launch {
+                    drawerState.close()
+                }
+                navHostController.navigate(Screen.SistemaList) {
+                    popUpTo(0)
+                }
+            },
+        )
+        NavigationDrawerItem(
+            label = { Text(text = "Clientes") },
+            selected = false,
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Call,
+                    contentDescription = null
+                )
+            },
+            onClick = {
+                coroutineScope.launch {
+                    drawerState.close()
+                }
+                navHostController.navigate(Screen.ClienteList) {
                     popUpTo(0)
                 }
             },
