@@ -1,11 +1,13 @@
 package com.example.prioridadesretrofit.presentation.prioridad
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.prioridadesretrofit.data.remote.dto.PrioridadDto
 import com.example.prioridadesretrofit.data.repository.PrioridadRepository
 import com.example.prioridadesretrofit.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -35,6 +37,7 @@ class PrioridadViewModel @Inject constructor(
                         isLoading = false,
                         prioridades = result.data ?: emptyList()
                     )
+
                 }
 
                 is Resource.Error -> _uiState.update {
@@ -45,9 +48,17 @@ class PrioridadViewModel @Inject constructor(
 
             }
         }
+
     }
 
-    fun addPrioridad() {
+    suspend fun getListPrioridades(): List<PrioridadDto> {
+        return viewModelScope.async {
+            val result = prioridadRepository.getPrioridadesList()
+            result.data ?: emptyList()
+        }.await()
+    }
+
+        fun addPrioridad() {
         viewModelScope.launch {
             if (descriptionExistOrEmpty(uiState.value.descripcion ?: "")) {
                 return@launch

@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.prioridadesretrofit.data.remote.dto.ClienteDto
 import com.example.prioridadesretrofit.data.remote.dto.PrioridadDto
 import com.example.prioridadesretrofit.data.remote.dto.TicketDto
 import com.example.prioridadesretrofit.presentation.prioridad.PrioridadViewModel
@@ -52,20 +53,31 @@ fun TicketListScreen(
     createTicket: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    PrioridadListBody(
+    var listPrioridades by  remember { mutableStateOf<List<PrioridadDto>>(emptyList()) }
+    var listClientes by  remember { mutableStateOf<List<ClienteDto>>(emptyList()) }
+    LaunchedEffect(Unit) {
+        listPrioridades = viewModel.getPrioridades()
+        listClientes = viewModel.getClientes()
+    }
+    TicketListBody(
         uiState = uiState,
         onAddPrioridad = createTicket,
-        goToTicketScreen = goToTicketScreen
+        goToTicketScreen = goToTicketScreen,
+        listPrioridades = listPrioridades,
+        listClientes = listClientes
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrioridadListBody(
+fun TicketListBody(
     uiState: TicketViewModel.UiState,
     onAddPrioridad: () -> Unit,
     goToTicketScreen: (Int) -> Unit,
+    listPrioridades: List<PrioridadDto>,
+    listClientes: List<ClienteDto>
 ) {
+
 
     Scaffold (
         modifier = Modifier.fillMaxSize(),
@@ -89,7 +101,6 @@ fun PrioridadListBody(
             ) {
                 Text(text = "ID", modifier = Modifier.weight(0.1f))
                 Text(text = "Prioridad", modifier = Modifier.weight(0.3f))
-                Text(text = "Fecha", modifier = Modifier.weight(0.3f))
                 Text(text = "Cliente", modifier = Modifier.weight(0.3f))
                 Text(text = "Asunto", modifier = Modifier.weight(0.3f))
             }
@@ -109,7 +120,10 @@ fun PrioridadListBody(
                     .fillMaxSize()
             ) {
                 items(uiState.tickets) { ticket ->
-                    PrioridadListRow(ticket, goToTicketScreen)
+                    val prioridadDescripcion= listPrioridades
+                        .find{prioridad -> prioridad.prioridadId == ticket.prioridadesId}?.descripcion?:"No tiene"
+                    val nombreCliente = listClientes.find { cliente -> cliente.clienteId == ticket.clientesId }?.nombre?: "No tiene"
+                    PrioridadListRow(ticket, goToTicketScreen, prioridadDescripcion,nombreCliente)
                 }
             }
         }
@@ -118,20 +132,22 @@ fun PrioridadListBody(
 
 @Composable
 fun PrioridadListRow(
-    it: TicketDto,
-    goToTicketScreen: (Int) -> Unit
+    ticket: TicketDto,
+    goToTicketScreen: (Int) -> Unit,
+    descripcion: String,
+    nombreCliente: String
 ) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { goToTicketScreen(it.ticketId) }
+            .clickable { goToTicketScreen(ticket.ticketId) }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = it.ticketId.toString(), modifier = Modifier.weight(0.10f))
-        Text(text = it.prioridadId.toString(), modifier = Modifier.weight(0.300f))
-        Text(text = it.date.toString(), modifier = Modifier.weight(0.30f))
-        Text(text = it.clienteId.toString(), modifier = Modifier.weight(0.30f))
-        Text(text = it.asunto.toString(), modifier = Modifier.weight(0.30f))
+        Text(text = ticket.ticketId.toString(), modifier = Modifier.weight(0.1f))
+        Text(text = descripcion, modifier = Modifier.weight(0.3f))
+        Text(text = nombreCliente, modifier = Modifier.weight(0.3f))
+        Text(text = ticket.asunto.toString(), modifier = Modifier.weight(0.3f))
     }
 }
