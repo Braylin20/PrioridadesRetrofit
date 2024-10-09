@@ -26,9 +26,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.prioridadesretrofit.presentation.cliente.ClienteListScreen
+import com.example.prioridadesretrofit.presentation.cliente.ClienteScreen
 import com.example.prioridadesretrofit.presentation.components.ModalDrawerSheet
 import com.example.prioridadesretrofit.presentation.prioridad.PrioridadListScreen
 import com.example.prioridadesretrofit.presentation.prioridad.PrioridadScreen
+import com.example.prioridadesretrofit.presentation.sistema.SistemaListScreen
+import com.example.prioridadesretrofit.presentation.ticket.TicketListScreen
 
 import kotlinx.coroutines.launch
 
@@ -93,6 +97,36 @@ fun PrioridadNavHost(
                     val prioridadId = it.toRoute<Screen.Prioridad>().prioridadId
                     PrioridadScreen(
                         onGoToPrioridadListScreen = { navHostController.navigateUp() },
+                    )
+                }
+                composable<Screen.TicketList> {
+                    TicketListScreen(
+                        createTicket = { navHostController.navigate(Screen.Ticket(0)) },
+                        goToTicketScreen = { navHostController.navigate(Screen.Ticket(it)) }
+                    )
+                }
+                composable<Screen.Sistema> {
+                    val sistemaId = it.toRoute<Screen.Sistema>().sistemaId
+                    PrioridadScreen(
+                        onGoToPrioridadListScreen = { navHostController.navigateUp() },
+                    )
+                }
+                composable<Screen.SistemaList> {
+                    SistemaListScreen(
+                        createSistema = { navHostController.navigate(Screen.Sistema(0)) },
+                        goToSistemaScreen = { navHostController.navigate(Screen.Sistema(it)) }
+                    )
+                }
+                composable<Screen.Cliente> {
+                    val clienteId = it.toRoute<Screen.Cliente>().clienteId
+                    ClienteScreen (
+                        onGoToClienteListScreen = { navHostController.navigate(Screen.ClienteList) },
+                    )
+                }
+                composable<Screen.ClienteList> {
+                    ClienteListScreen (
+                        createCliente = { navHostController.navigate(Screen.Cliente(0)) },
+                        goToClienteScreen = { navHostController.navigate(Screen.Cliente(it)) }
                     )
                 }
             }
