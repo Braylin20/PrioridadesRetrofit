@@ -24,7 +24,6 @@ class PrioridadViewModel @Inject constructor(
 
     init {
         getPrioridades()
-
     }
 
     private fun getPrioridades() {
