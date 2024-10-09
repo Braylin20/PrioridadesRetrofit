@@ -33,6 +33,7 @@ import com.example.prioridadesretrofit.presentation.prioridad.PrioridadListScree
 import com.example.prioridadesretrofit.presentation.prioridad.PrioridadScreen
 import com.example.prioridadesretrofit.presentation.sistema.SistemaListScreen
 import com.example.prioridadesretrofit.presentation.ticket.TicketListScreen
+import com.example.prioridadesretrofit.presentation.ticket.TicketScreen
 
 import kotlinx.coroutines.launch
 
@@ -103,6 +104,13 @@ fun PrioridadNavHost(
                     TicketListScreen(
                         createTicket = { navHostController.navigate(Screen.Ticket(0)) },
                         goToTicketScreen = { navHostController.navigate(Screen.Ticket(it)) }
+                    )
+                }
+                composable<Screen.Ticket> {
+                    val ticketId = it.toRoute<Screen.Ticket>().ticketId
+                    TicketScreen(
+                        onNavigateBack = { navHostController.navigate(Screen.TicketList) },
+
                     )
                 }
                 composable<Screen.Sistema> {
